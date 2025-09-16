@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Hidden Movies</h2>
+<ul>
+  {% for movie in movies %}
+    <li>
+      {{ movie.title }} ({{ movie.release_date }})
+      <a href="{% url 'unhide_movie' movie.id %}">Unhide</a>
+    </li>
+  {% empty %}
+    <li>No hidden movies.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'movie_list' %}">Back to All Movies</a>
+{% endblock %}

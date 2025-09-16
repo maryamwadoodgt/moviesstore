@@ -7,6 +7,7 @@ class Movie(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     image = models.ImageField(upload_to='movie_images/')
+    is_hidden = models.BooleanField(default=False)  # NEW FIELD
     def __str__(self):
         return str(self.id) + ' - ' + self.name
     
