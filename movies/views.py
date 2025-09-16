@@ -22,27 +22,6 @@ def show(request, id):
     template_data['reviews'] = reviews
     return render(request, 'movies/show.html', {'template_data': template_data})
 
-# NEW CODE
-def movie_list(request):
-    movies = Movie.objects.filter(is_hidden=False)
-    return render(request, "movies/movie_list.html", {"movies": movies})
-
-def hidden_movies(request):
-    movies = Movie.objects.filter(is_hidden=True)
-    return render(request, "movies/hidden_movies.html", {"movies": movies})
-
-def hide_movie(request, movie_id):
-    movie = get_object_or_404(Movie, id=movie_id)
-    movie.is_hidden = True
-    movie.save()
-    return redirect("movie_list")
-
-def unhide_movie(request, movie_id):
-    movie = get_object_or_404(Movie, id=movie_id)
-    movie.is_hidden = False
-    movie.save()
-    return redirect("hidden_movies")
-
 @login_required
 def create_review(request, id):
     if request.method == 'POST' and request.POST['comment'] != '':
@@ -80,3 +59,24 @@ def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+# NEW CODE
+def movie_list(request):
+    movies = Movie.objects.filter(is_hidden=False)
+    return render(request, "movies/index.html", {"movies": movies})
+
+def hidden_movies(request):
+    movies = Movie.objects.filter(is_hidden=True)
+    return render(request, "movies/hidden_movies.html", {"movies": movies})
+
+def hide_movie(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    movie.is_hidden = True
+    movie.save()
+    return redirect("movie_list")
+
+def unhide_movie(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    movie.is_hidden = False
+    movie.save()
+    return redirect("hidden_movies")
