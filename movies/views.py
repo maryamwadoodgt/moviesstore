@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
-        movies =  Movie.objects.filter(name__icontains=search_term)
+        movies = Movie.objects.filter(name__icontains=search_term, is_hidden=False)
     else:
-        movies = Movie.objects.all()
+        movies = Movie.objects.filter(is_hidden=False)
     template_data = {}
     template_data['title'] = 'Movies'
     template_data['movies'] = movies
@@ -63,11 +63,13 @@ def delete_review(request, id, review_id):
 # NEW CODE
 def movie_list(request):
     movies = Movie.objects.filter(is_hidden=False)
-    return render(request, "movies/index.html", {"movies": movies})
+    template_data = {'movies': movies, 'title': 'Movies'}
+    return render(request, "movies/index.html", {'template_data': template_data})
 
 def hidden_movies(request):
     movies = Movie.objects.filter(is_hidden=True)
-    return render(request, "movies/hidden_movies.html", {"movies": movies})
+    template_data = {'movies': movies, 'title': 'Hidden Movies'}
+    return render(request, "movies/hidden_movies.html", {'template_data': template_data})
 
 def hide_movie(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)

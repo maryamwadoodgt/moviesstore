@@ -34,16 +34,16 @@
             <a href="{% url 'movies.show' id=movie.id %}" class="btn bg-dark text-white">
             {{ movie.name }}
             </a>
-            <ul>
-              <button>
-                {{ movie.title }} {{ movie.release_date }}
-                <a href="{% url 'hide_movie' movie.id %}" class="btn btn-warning w-100">Hide</a>
-              </button>
-            </ul>
+            <a href="{% url 'hide_movie' movie.id %}" class="btn btn-warning w-100 mt-2">Hide</a>
           </div>
         </div>
       </div>
       {% endfor %}
+    </div>
+    <div class="row mt-4">
+      <div class="col-12">
+        <a href="{% url 'hidden_movies' %}" class="btn btn-secondary">View Hidden Movies</a>
+      </div>
     </div>
   </div>
 </div>
