@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ petition.title }}</h2>
+<p>{{ petition.description }}</p>
+<p>Created by: {{ petition.created_by }} at {{ petition.created_at }}</p>
+<p>Yes: {{ petition.yes_count }}</p>
+
+{% if user.is_authenticated %}
+  {% if user_vote %}
+    <p>Your vote: {{ user_vote.choice }}</p>
+    <form method="POST" action="{% url 'petitions.vote' petition.id %}">
+      {% csrf_token %}
+      <button name="choice" value="yes" class="btn btn-success">Vote Yes</button>
+      <button name="choice" value="no" class="btn btn-secondary">Vote No</button>
+    </form>
+  {% else %}
+    <form method="POST" action="{% url 'petitions.vote' petition.id %}">
+      {% csrf_token %}
+      <button name="choice" value="yes" class="btn btn-success">Vote Yes</button>
+      <button name="choice" value="no" class="btn btn-secondary">Vote No</button>
+    </form>
+  {% endif %}
+{% else %}
+  <p>Please <a href="{% url 'login' %}">log in</a> to vote.</p>
+{% endif %}
+
+<a href="{% url 'petitions.list' %}">Back to petitions</a>
+{% endblock %}

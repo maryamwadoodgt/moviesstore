@@ -12,4 +12,9 @@ urlpatterns = [
     path("hidden-movies/", views.hidden_movies, name="hidden_movies"),
     path("hide/<int:movie_id>/", views.hide_movie, name="hide_movie"),
     path("unhide/<int:movie_id>/", views.unhide_movie, name="unhide_movie"),
+    # Petitions
+    path('petitions/', views.petition_list, name='petitions.list'),
+    path('petitions/create/', views.petition_create, name='petitions.create'),
+    path('petitions/<int:petition_id>/', views.petition_detail, name='petitions.detail'),
+    path('petitions/<int:petition_id>/vote/', views.petition_vote, name='petitions.vote'),
 ]

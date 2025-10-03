@@ -20,3 +20,33 @@ class Review(models.Model):
     
     def __str__(self):
         return str(self.id) + ' - ' + self.movie.name
+
+
+class Petition(models.Model):
+    """A petition requesting that a movie be added to the catalog."""
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.id} - {self.title}"
+
+    def yes_count(self):
+        return self.votes.filter(choice=True).count()
+
+
+class PetitionVote(models.Model):
+    """A vote by a user on a petition. choice=True means affirmative (yes)."""
+    id = models.AutoField(primary_key=True)
+    petition = models.ForeignKey(Petition, related_name='votes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    choice = models.BooleanField(default=True)
+    voted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('petition', 'user')
+
+    def __str__(self):
+        return f"Vote {self.id} - petition {self.petition_id} by {self.user_id}"

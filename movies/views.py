@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Review
 from django.contrib.auth.decorators import login_required
+from .models import Petition, PetitionVote
+from django.contrib import messages
 
 def index(request):
     search_term = request.GET.get('search')
@@ -82,3 +84,56 @@ def unhide_movie(request, movie_id):
     movie.is_hidden = False
     movie.save()
     return redirect("hidden_movies")
+
+
+# Petitions feature
+def petition_list(request):
+    petitions = Petition.objects.all().order_by('-created_at')
+    return render(request, 'movies/petitions/list.html', {'petitions': petitions})
+
+
+@login_required
+def petition_create(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        if not title:
+            messages.error(request, 'Title is required')
+            return redirect('petitions.list')
+        p = Petition.objects.create(title=title, description=description, created_by=request.user)
+        return redirect('petitions.detail', petition_id=p.id)
+
+    return render(request, 'movies/petitions/create.html')
+
+
+@login_required
+def petition_detail(request, petition_id):
+    petition = get_object_or_404(Petition, id=petition_id)
+    user_vote = None
+    if request.user.is_authenticated:
+        try:
+            user_vote = PetitionVote.objects.get(petition=petition, user=request.user)
+        except PetitionVote.DoesNotExist:
+            user_vote = None
+    return render(request, 'movies/petitions/detail.html', {'petition': petition, 'user_vote': user_vote})
+
+
+@login_required
+def petition_vote(request, petition_id):
+    petition = get_object_or_404(Petition, id=petition_id)
+    # only allow POST
+    if request.method != 'POST':
+        return redirect('petitions.detail', petition_id=petition.id)
+
+    # choice param optional -- default to yes/affirmative
+    choice = request.POST.get('choice', 'yes')
+    affirmative = True if choice.lower() in ('yes', 'true', '1') else False
+
+    vote, created = PetitionVote.objects.get_or_create(petition=petition, user=request.user, defaults={'choice': affirmative})
+    if not created:
+        # update existing vote
+        vote.choice = affirmative
+        vote.save()
+
+    messages.success(request, 'Your vote has been recorded')
+    return redirect('petitions.detail', petition_id=petition.id)

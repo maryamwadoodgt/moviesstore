@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Petitions</h2>
+<a href="{% url 'petitions.create' %}" class="btn btn-primary mb-3">Create petition</a>
+<ul class="list-group">
+  {% for petition in petitions %}
+    <li class="list-group-item">
+      <a href="{% url 'petitions.detail' petition.id %}">{{ petition.title }}</a>
+      <span class="badge bg-secondary float-end">Yes: {{ petition.yes_count }}</span>
+    </li>
+  {% empty %}
+    <li class="list-group-item">No petitions yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
